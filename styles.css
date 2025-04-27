@@ -1,0 +1,55 @@
+/* Estilo básico (desktop) */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  
+}
+
+.container {
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Layout básico para dispositivos maiores (desktops) */
+@media (min-width: 1200px) {
+  .container {
+    width: 80%;
+  }
+}
+
+/* Layout para tablets */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .container {
+    width: 90%;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Layout para smartphones */
+@media (max-width: 767px) {
+  body {
+    
+    padding: 10px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .btn {
+    font-size: 1rem;
+    width: 100%;
+  }
+}

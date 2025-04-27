@@ -82,10 +82,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/jquery.inputmask.bundle.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="d-flex">
-    <?php include 'inc/menu.php'; ?>
+    <?php include 'menu.php'; ?>
 
     <div class="container-fluid p-4">
       <h2 class="mb-4">Cadastro de Veiculos</h2>
@@ -118,17 +119,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
   </div>
 
-<script>
-  $(document).ready(function(){
-    $("#placa").inputmask({
-      mask: [
-        "AAA-9999", 
-        "AAA9A99"
-      ],
-      keepStatic: true
+  <script>
+    // Máscara para placa de veículo
+    $(document).ready(function() {
+      $('#placa').inputmask('AAA-9999');  // A máscara para a placa, ex: ABC-1234
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
