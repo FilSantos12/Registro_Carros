@@ -45,7 +45,7 @@ $result = $conn->query($sql);
     <?php include 'menu.php'; ?>
 
     <div class="container-fluid p-4">
-      <h2 class="mb-4">Lista de Veículos</h2>
+      <h2 class="mb-4"><i class="bi bi-card-list me-2"></i> Lista de Veículos</h2>
 
       <form method="GET" class="row mb-4">
         <div class="col-md-4">
@@ -87,18 +87,18 @@ $result = $conn->query($sql);
                 <td>
                   <?php if (!empty($row['pdf_path'])): ?>
                     <a href="uploads/<?= htmlspecialchars($row['pdf_path']) ?>" class="btn btn-sm btn-success" target="_blank">
-                      Visualizar
+                      <i class="bi bi-search"></i> Visualizar
                     </a>
                     <a href="uploads/<?= htmlspecialchars($row['pdf_path']) ?>" download class="btn btn-sm btn-primary ms-2">
-                      Baixar
+                      <i class="bi bi-download"></i> Baixar
                     </a>
                   <?php else: ?>
                     <span class="text-muted">Nenhum PDF</span>
                   <?php endif; ?>
                 </td>
                 <td>
-                  <a href="edit_car.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                  <a href="delete_car.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este carro?');">Excluir</a>
+                  <a href="edit_car.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm"><i class="bi bi-pen"></i> Editar</a>
+                  <a href="delete_car.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este carro?');"><i class="bi bi-trash"></i> Excluir</a>
                 </td>
               </tr>
             <?php endwhile; ?>

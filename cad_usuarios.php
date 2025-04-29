@@ -65,15 +65,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <form action="cad_usuarios.php" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
-          <label class="form-label">Usuário</label>
+          <label class="form-label"><i class="bi bi-person-fill"></i> Usuário</label>
           <input type="text" class="form-control" name="usuario" required>
         </div>
         <div class="mb-3">
-          <label class="form-label">Senha</label>
+          <label class="form-label"><i class="bi bi-key-fill"></i> Senha</label>
           <input type="password" class="form-control" name="senha" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i> Cadastrar</button>
       </form>
     </div>
   </div>

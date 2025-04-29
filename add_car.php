@@ -89,32 +89,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php include 'menu.php'; ?>
 
     <div class="container-fluid p-4">
-      <h2 class="mb-4">Cadastro de Veiculos</h2>
+      <h2 class="mb-4"><i class="bi bi-car-front-fill"></i> Cadastro de Veículos</h2>
 
       <?= $mensagem ?>
 
       <form action="add_car.php" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
-          <label for="placa" class="form-label">Placa</label>
+          <label for="placa" class="form-label"><i class="bi bi-credit-card-2-front"></i> Placa</label>
           <input type="text" class="form-control" id="placa" name="placa" required>
         </div>
         <div class="mb-3">
-          <label for="renavam" class="form-label">Codigo do Renavam</label>
+          <label for="renavam" class="form-label"><i class="bi bi-upc"></i> Codigo do Renavam</label>
           <input type="text" class="form-control" id="renavam" name="renavam" required>
         </div>
         <div class="mb-3">
-          <label for="crv" class="form-label">Numero do CRV</label>
+          <label for="crv" class="form-label"><i class="bi bi-123"></i> Numero do CRV</label>
           <input type="text" class="form-control" id="crv" name="crv" required>
         </div>
         <div class="mb-3">
-          <label for="codigo" class="form-label">Numero de segurança do CRV</label>
+          <label for="codigo" class="form-label"><i class="bi bi-lock-fill"></i> Numero de segurança do CRV</label>
           <input type="text" class="form-control" id="codigo" name="codigo_seguranca" required>
         </div>
         <div class="mb-3">
-          <label for="documento" class="form-label">Documento (PDF)</label>
+          <label for="documento" class="form-label"><i class="bi bi-file-pdf-fill"></i>PDF</label>
           <input type="file" class="form-control" id="documento" name="documento" accept="application/pdf">
         </div>
-        <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i> Cadastrar</button>
       </form>
     </div>
   </div>

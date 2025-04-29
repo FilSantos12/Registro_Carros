@@ -94,8 +94,8 @@ $result = $conn->query($sql);
           <thead>
             <tr>
               <th>ID</th>
-              <th>Usuário</th>
-              <th>Ações</th>
+              <th>Usuário <i class="bi bi-person-fill"></i></th>
+              <th>Ações <i class="bi bi-trash"></i></th>
             </tr>
           </thead>
           <tbody>

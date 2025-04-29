@@ -43,8 +43,8 @@
     <div class="container-fluid p-4 mt-4">
       <h2>Bem-vindo!</h2>
       <p class="mt-3">Sistema moderno de controle de veículos.</p>
+      
     </div>
   </div>
-
 </body>
 </html>
