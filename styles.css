@@ -53,3 +53,26 @@ body {
     width: 100%;
   }
 }
+
+    /* Estilos específicos para a tabela */
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .observacao-cell {
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .observacao-cell:hover {
+      white-space: normal;
+      overflow: visible;
+      position: relative;
+      z-index: 100;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .action-buttons {
+      white-space: nowrap;
+    }
+

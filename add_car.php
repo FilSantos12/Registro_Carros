@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $renavam = $_POST['renavam'];
     $crv = $_POST['crv'];
     $codigo = $_POST['codigo_seguranca'];
+    $observacoes = $_POST['observacoes'] ?? NULL; // Pode ser NULL se não enviado
 
     if (!placaValida($placa)) {
         $mensagem = "<div class='alert alert-warning'>Placa inválida. Use o formato ABC-1234 ou ABC1D23.</div>";
@@ -56,11 +57,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Só insere no banco se não teve problema com o upload
+       // Só insere no banco se não teve problema com o upload
         if (empty($mensagem)) {
-            $sql = "INSERT INTO carros (placa, renavam, crv, codigo_seguranca, pdf_path)
-                    VALUES ('$placa', '$renavam', '$crv', '$codigo', " . 
-                    ($pdf_path ? "'$pdf_path'" : "NULL") . ")";
+            // Prepara os valores corretamente
+            $pdf_value = $pdf_path ? "'$pdf_path'" : "NULL";
+            $obs_value = $observacoes ? "'" . $conn->real_escape_string($observacoes) . "'" : "NULL";
+            
+            // Ajuste a ordem das colunas para corresponder ao banco de dados
+            $sql = "INSERT INTO carros (placa, renavam, crv, codigo_seguranca, observacoes, pdf_path) 
+                    VALUES ('" . $conn->real_escape_string($placa) . "', 
+                            '" . $conn->real_escape_string($renavam) . "', 
+                            '" . $conn->real_escape_string($crv) . "', 
+                            '" . $conn->real_escape_string($codigo) . "', 
+                            $obs_value,
+                            $pdf_value)";
 
             if ($conn->query($sql) === TRUE) {
                 $mensagem = "<div class='alert alert-success'>Carro cadastrado com sucesso!</div>";
@@ -94,22 +104,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <?= $mensagem ?>
 
       <form action="add_car.php" method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
+    <!-- Placa -->
+     <div class="row">    
+        <div class="col-md-6 mb-3">
           <label for="placa" class="form-label"><i class="bi bi-credit-card-2-front"></i> Placa</label>
           <input type="text" class="form-control" id="placa" name="placa" required>
         </div>
-        <div class="mb-3">
+    <!-- Codigo do Renavam -->
+        <div class="col-md-6 mb-3">
           <label for="renavam" class="form-label"><i class="bi bi-upc"></i> Codigo do Renavam</label>
           <input type="text" class="form-control" id="renavam" name="renavam" required>
         </div>
-        <div class="mb-3">
+     </div>
+    <!-- Numero do CRV -->
+     <div class="row">
+        <div class="col-md-6 mb-3">
           <label for="crv" class="form-label"><i class="bi bi-123"></i> Numero do CRV</label>
           <input type="text" class="form-control" id="crv" name="crv" required>
         </div>
-        <div class="mb-3">
+    <!-- Numero de segurança do CRV -->    
+        <div class="col-md-6 mb-3">
           <label for="codigo" class="form-label"><i class="bi bi-lock-fill"></i> Numero de segurança do CRV</label>
           <input type="text" class="form-control" id="codigo" name="codigo_seguranca" required>
         </div>
+     </div>
+    <!-- Observações -->
+        <div class="mb-3">
+          <label for="editObservacoes" class="form-label"><i class="bi bi-clipboard2-fill"></i> Observações</label>
+          <input type="text" name="observacoes" class="form-control" id="editObservacoes">
+        </div>
+    <!-- PDF -->
         <div class="mb-3">
           <label for="documento" class="form-label"><i class="bi bi-file-pdf-fill"></i>PDF</label>
           <input type="file" class="form-control" id="documento" name="documento" accept="application/pdf">

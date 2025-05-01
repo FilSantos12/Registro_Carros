@@ -3,7 +3,7 @@
   <!-- Logo -->
   <a href="index.php" class="d-flex align-items-center mb-4 text-white text-decoration-none">
     <img src="images/Logo ProntBox.png" alt="Logo" style="width: 40px; height: auto; margin-right: 10px;">
-    <span style="font-size: 26px; font-weight: bold; letter-spacing: 1px;">Pront Box</span>
+    <span style="font-size: 26px; font-weight: bold; letter-spacing: 1px;">ProntBox</span>
   </a>
 
   <hr class="text-white">
@@ -41,7 +41,7 @@
   <!-- Footer -->
   <div class="mt-3 text-center text-white small">
     <hr class="text-white">
-    <p class="mb-1">Filipe Santos &copy; 2025</p>
+    <p class="mb-1">Filipe Santos &copy; 2025 v.2.0.0</p>
     
     <!-- Social Icons - Versão Melhorada -->
     <div class="social-icons d-flex justify-content-center gap-3 mt-2">

@@ -12,25 +12,45 @@ if ($conn->connect_error) {
     die("Erro na conexão: " . $conn->connect_error);
 }
 
-// Inicializar a variável para evitar erro de variável indefinida
 $mensagem = "";
 
-// Quando o formulário for enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $usuario = $_POST['usuario'];
-    $senha = $_POST['senha'];
+    $usuario = trim($_POST['usuario']);
+    $senha = trim($_POST['senha']);
 
-    $sql = "SELECT * FROM usuarios WHERE usuario = '$usuario' AND senha = '$senha'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows == 1) {
-        $_SESSION['usuario'] = $usuario;
-        header("Location: index.php");
-        exit();
-    } else {
-        $mensagem = "<div class='alert alert-danger'>Usuário ou senha inválidos.</div>";
+    // Consulta segura usando prepared statements
+    $sql = "SELECT id, usuario, senha FROM usuarios WHERE usuario = ?";
+    $stmt = $conn->prepare($sql);
+    
+    if ($stmt === false) {
+        die("Erro na preparação da consulta: " . $conn->error);
     }
+    
+    $stmt->bind_param("s", $usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
+        $usuario = $result->fetch_assoc();
+        
+        // VERIFICAÇÃO CORRETA DA SENHA COM HASH
+        if (password_verify($senha, $usuario['senha'])) {
+            $_SESSION['usuario_id'] = $usuario['id'];
+            $_SESSION['usuario'] = $usuario['usuario'];
+            $_SESSION['logado'] = true;
+            
+            header("Location: index.php");
+            exit();
+        } else {
+            $mensagem = "<div class='alert alert-danger'>Senha incorreta!</div>";
+        }
+    } else {
+        $mensagem = "<div class='alert alert-danger'>Usuário não encontrado!</div>";
+    }
+    
+    $stmt->close();
 }
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -40,11 +60,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
     /* Estilo de fundo */
     body {
-      background: linear-gradient(135deg, #4e54c8, #8f94fb); /* Gradiente moderno */
+      background: linear-gradient(135deg, #4e54c8, #8f94fb);
       height: 100vh;
       display: flex;
       align-items: center;
@@ -56,15 +77,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .card {
       width: 100%;
       max-width: 400px;
-      background: rgba(255, 255, 255, 0.9); /* Fundo mais claro e suave */
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       padding: 30px;
       transition: transform 0.3s ease-in-out;
     }
 
     .card:hover {
-      transform: translateY(-5px); /* Efeito de hover para o card */
+      transform: translateY(-5px);
     }
 
     h3 {
@@ -86,12 +107,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .form-control:focus {
-      border-color: #4e54c8; /* Cor de foco personalizada */
-      box-shadow: 0 0 5px rgba(78, 84, 200, 0.8); /* Efeito de foco */
+      border-color: #4e54c8;
+      box-shadow: 0 0 5px rgba(78, 84, 200, 0.8);
     }
 
     .btn {
-      background-color: #4e54c8; /* Cor do botão */
+      background-color: #4e54c8;
       border-radius: 10px;
       padding: 12px;
       font-size: 1rem;
@@ -100,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     .btn:hover {
-      background-color: #8f94fb; /* Efeito de hover no botão */
+      background-color: #8f94fb;
     }
 
     .alert {
@@ -111,17 +132,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
   <div class="card">
-    <h3>Login</h3>
+    <h3><i class="bi bi-box-arrow-in-right"></i> Login</h3>
 
     <?php if (!empty($mensagem)) { echo $mensagem; } ?>
 
     <form action="login.php" method="POST">
       <div class="mb-3">
-        <label class="form-label">Usuário</label>
+        <label class="form-label"><i class="bi bi-person-fill"></i> Usuário</label>
         <input type="text" class="form-control" name="usuario" required>
       </div>
       <div class="mb-3">
-        <label class="form-label">Senha</label>
+        <label class="form-label"><i class="bi bi-key-fill"></i> Senha</label>
         <input type="password" class="form-control" name="senha" required>
       </div>
       <button type="submit" class="btn">Entrar</button>
