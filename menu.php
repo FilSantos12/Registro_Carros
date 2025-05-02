@@ -46,7 +46,7 @@
   <!-- Footer -->
   <div class="mt-3 text-center text-white small">
     <hr class="text-white">
-    <p class="mb-1">Filipe Santos &copy; 2025 v.2.0.0</p>
+    <p class="mb-1">Filipe Santos &copy; 2025 v.2.0.3</p>
     
     <!-- Social Icons - Versão Melhorada -->
     <div class="social-icons d-flex justify-content-center gap-3 mt-2">
