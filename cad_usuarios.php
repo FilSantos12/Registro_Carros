@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <input type="password" class="form-control" name="senha" required>
         </div>
 
-        <button type="submit" class="btn btn-primary"><i class="bi bi-check"></i> Cadastrar</button>
+        <button type="submit" class="btn btn-success"><i class="bi bi-check"></i> Cadastrar</button>
       </form>
     </div>
   </div>

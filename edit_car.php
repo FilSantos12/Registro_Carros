@@ -111,11 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label"><i class="bi bi-credit-card-2-front"></i> Placa</label>
-              <input type="text" class="form-control" name="placa" value="<?= htmlspecialchars($carro['placa']) ?>" required>
+              <input type="text" class="form-control" name="placa" value="<?= htmlspecialchars($carro['placa']) ?>" >
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label"><i class="bi bi-upc"></i> Código do Renavam</label>
-              <input type="text" class="form-control" name="renavam" value="<?= htmlspecialchars($carro['renavam']) ?>" required>
+              <input type="text" class="form-control" name="renavam" value="<?= htmlspecialchars($carro['renavam']) ?>" >
             </div>
         </div>
         <div class="row">
@@ -138,13 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if (!empty($carro['pdf_path'])): ?>
                 <p class="mt-2">
                 Documento atual: 
-                <a href="uploads/<?= htmlspecialchars($carro['pdf_path']) ?>" target="_blank" class="btn btn-sm btn-success">
+                <a href="uploads/<?= htmlspecialchars($carro['pdf_path']) ?>" target="_blank" class="btn btn-sm btn-primary">
                     <i class="bi bi-file-pdf-fill"></i> Visualizar
                 </a>
                 </p>
             <?php endif; ?>
         </div>
-        <button type="submit" class="btn btn-primary"><i class="bi bi-floppy-fill"></i> Salvar Alterações</button>
+        <button type="submit" class="btn btn-success"><i class="bi bi-floppy-fill"></i> Salvar Alterações</button>
         <a href="lista_carros.php" class="btn btn-secondary ms-2"><i class="bi bi-x-circle"></i> Cancelar</a>
       </form>
     </div>

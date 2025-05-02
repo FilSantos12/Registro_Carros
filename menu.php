@@ -20,6 +20,11 @@
       </a>
     </li>
     <li class="nav-item mb-3">
+      <a href="upload_em_massa.php" class="btn btn-outline-light w-100 d-flex align-items-center">
+        <i class="bi bi-card-list me-2"></i> <span>Upload PDF</span>
+      </a>
+    </li>
+    <li class="nav-item mb-3">
       <a href="cad_usuarios.php" class="btn btn-outline-light w-100 d-flex align-items-center">
         <i class="bi bi-person-add me-2"></i> <span>Cadastrar Usuario</span>
       </a>

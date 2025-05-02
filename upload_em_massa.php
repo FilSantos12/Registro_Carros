@@ -20,18 +20,23 @@ function placaValida($placa) {
     return preg_match('/^[A-Z]{3}[0-9]{4}$/', $placa) || preg_match('/^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$/', $placa);
 }
 
-// Configurações
-$pastaUpload = __DIR__ . '/uploads/';
+// Configurações - CORREÇÃO CRÍTICA AQUI
+$pastaUpload = __DIR__ . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
 $resultado = ['sucesso' => 0, 'erros' => []];
 $tamanhoMaximo = 10 * 1024 * 1024; // 10MB
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['pdfs']['name'][0])) {
     
-    // Garantir que a pasta existe
+    // Verificação e criação do diretório com tratamento de erros
     if (!is_dir($pastaUpload)) {
         if (!mkdir($pastaUpload, 0777, true)) {
-            die("Falha ao criar diretório de uploads");
+            die("ERRO: Não foi possível criar o diretório de uploads em: " . $pastaUpload);
         }
+    }
+
+    // Verifica se o diretório é gravável - CORREÇÃO IMPORTANTE
+    if (!is_writable($pastaUpload)) {
+        die("ERRO: O diretório de uploads não tem permissão de escrita: " . $pastaUpload);
     }
 
     foreach ($_FILES['pdfs']['tmp_name'] as $key => $tmpName) {
@@ -40,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['pdfs']['name'][0])) 
         $tamanho = $_FILES['pdfs']['size'][$key];
 
         if ($erro !== UPLOAD_ERR_OK) {
-            $resultado['erros'][] = "Erro no upload do arquivo {$nomeOriginal}";
+            $resultado['erros'][] = "Erro no upload do arquivo {$nomeOriginal} (Código: $erro)";
             continue;
         }
 
@@ -55,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['pdfs']['name'][0])) 
             continue;
         }
 
-        // Extrai placa do nome do arquivo (formato: PLACA_TIPODOC.pdf)
         $nomeBase = pathinfo($nomeOriginal, PATHINFO_FILENAME);
         $partes = explode('_', $nomeBase, 2);
         $placa = strtoupper(str_replace(['-', ' '], '', $partes[0] ?? ''));
@@ -70,13 +74,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['pdfs']['name'][0])) 
         $novoNome = uniqid('doc_') . '.pdf';
         $caminhoFinal = $pastaUpload . $novoNome;
 
-        // Move o arquivo para a pasta de uploads
+        // DEBUG: Mostra o caminho completo onde está tentando salvar
+        error_log("Tentando salvar arquivo em: " . $caminhoFinal);
+
+        // Move o arquivo para a pasta de uploads com verificação explícita
         if (move_uploaded_file($tmpName, $caminhoFinal)) {
+            // DEBUG: Verifica se o arquivo realmente foi criado
+            if (!file_exists($caminhoFinal)) {
+                $resultado['erros'][] = "ERRO CRÍTICO: Arquivo {$nomeOriginal} não foi criado em {$caminhoFinal}";
+                continue;
+            }
+            
             try {
-                $observacao = date('d/m/Y H:i') . " - " . $tipoDoc;
-                $renavam = 'A DEFINIR';
-                $crv = 'A DEFINIR';
-                $codigo = 'A DEFINIR';
+                $observacao = date('') ;
+                $renavam = '';
+                $crv = '';
+                $codigo = '';
                 
                 // Verifica se a placa já existe
                 $checkStmt = $conn->prepare("SELECT id FROM carros WHERE placa = ?");
@@ -101,14 +114,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['pdfs']['name'][0])) 
                     $stmt->bind_param("ssssss", $placa, $renavam, $crv, $codigo, $novoNome, $observacao);
                 }
                 
-                $stmt->execute();
-                $resultado['sucesso']++;
+                if ($stmt->execute()) {
+                    $resultado['sucesso']++;
+                } else {
+                    $resultado['erros'][] = "Erro ao salvar no banco de dados: " . $stmt->error;
+                    @unlink($caminhoFinal); // Remove o arquivo se falhou no banco
+                }
             } catch (Exception $e) {
                 $resultado['erros'][] = "Erro ao salvar {$nomeOriginal}: " . $e->getMessage();
                 @unlink($caminhoFinal); // Remove o arquivo em caso de erro
             }
         } else {
-            $resultado['erros'][] = "Falha ao mover {$nomeOriginal} para a pasta de uploads";
+            $error = error_get_last();
+            $resultado['erros'][] = "Falha ao mover {$nomeOriginal} para {$caminhoFinal}. Erro: " . ($error['message'] ?? 'Desconhecido');
         }
     }
 
@@ -118,74 +136,84 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_FILES['pdfs']['name'][0])) 
 }
 ?>
 
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastro de Veiculos</title>
+  <title>Upload em Massa de PDFs</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/jquery.inputmask.bundle.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
   <div class="d-flex">
     <?php include 'menu.php'; ?>
 
-    <div class="container-fluid p-4">
-      <h2 class="mb-4"><i class="bi bi-car-front-fill"></i> Cadastro de Veículos</h2>
+    <div class="main-content">
+      <div class="container-fluid p-4">
+        <h2 class="mb-4"><i class="bi bi-upload me-2"></i>Upload em Massa de PDFs</h2>
 
-      <?= $mensagem ?>
-
-      <form action="add_car.php" method="POST" enctype="multipart/form-data">
-    <!-- Placa -->
-     <div class="row">    
-        <div class="col-md-6 mb-3">
-          <label for="placa" class="form-label"><i class="bi bi-credit-card-2-front"></i> Placa</label>
-          <input type="text" class="form-control" id="placa" name="placa" required>
+        <div class="card">
+          <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+              <div class="mb-3">
+                <label class="form-label"><i class="bi bi-file-pdf-fill me-2"></i>Selecione os arquivos PDF</label>
+                <input type="file" class="form-control" name="pdfs[]" multiple accept=".pdf" required id="fileInput">
+                <small class="text-muted">
+                  O sistema ira criar o cadastro do veiculo, conforme o nome do arquivo em PDF!
+                </small>
+                <div class="file-info" id="fileInfo">Tamanho máximo por arquivo: 10MB +ou- 50 arquivos</div>
+              </div>
+              
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-upload me-2"></i>Enviar Tudo
+              </button>
+              <a href="lista_carros.php" class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left me-2"></i>Voltar
+              </a>
+            </form>
+          </div>
         </div>
-    <!-- Codigo do Renavam -->
-        <div class="col-md-6 mb-3">
-          <label for="renavam" class="form-label"><i class="bi bi-upc"></i> Codigo do Renavam</label>
-          <input type="text" class="form-control" id="renavam" name="renavam" required>
-        </div>
-     </div>
-    <!-- Numero do CRV -->
-     <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="crv" class="form-label"><i class="bi bi-123"></i> Numero do CRV</label>
-          <input type="text" class="form-control" id="crv" name="crv" required>
-        </div>
-    <!-- Numero de segurança do CRV -->    
-        <div class="col-md-6 mb-3">
-          <label for="codigo" class="form-label"><i class="bi bi-lock-fill"></i> Numero de segurança do CRV</label>
-          <input type="text" class="form-control" id="codigo" name="codigo_seguranca" required>
-        </div>
-     </div>
-    <!-- Observações -->
-        <div class="mb-3">
-          <label for="editObservacoes" class="form-label"><i class="bi bi-clipboard2-fill"></i> Observações</label>
-          <input type="text" name="observacoes" class="form-control" id="editObservacoes">
-        </div>
-    <!-- PDF -->
-        <div class="mb-3">
-          <label for="documento" class="form-label"><i class="bi bi-file-pdf-fill"></i>PDF</label>
-          <input type="file" class="form-control" id="documento" name="documento" accept="application/pdf">
-        </div>
-        <button type="submit" class="btn btn-success"><i class="bi bi-check"></i> Cadastrar</button>
-      </form>
+      </div>
     </div>
   </div>
 
   <script>
-    // Máscara para placa de veículo
-    $(document).ready(function() {
-      $('#placa').inputmask('AAA-9999');  // A máscara para a placa, ex: ABC-1234
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      const files = document.getElementById('fileInput').files;
+      const maxSize = 10 * 1024 * 1024;
+      let hasError = false;
+      
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].size > maxSize) {
+          alert(`O arquivo "${files[i].name}" excede o limite de 10MB!`);
+          hasError = true;
+        }
+      }
+      
+      if (hasError) {
+        e.preventDefault();
+      }
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+      const files = this.files;
+      const infoDiv = document.getElementById('fileInfo');
+      let totalSize = 0;
+      
+      if (files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          totalSize += files[i].size;
+        }
+        
+        const totalMB = (totalSize / (1024 * 1024)).toFixed(2);
+        infoDiv.textContent = `${files.length} arquivo(s) selecionado(s) - Total: ${totalMB} MB`;
+      } else {
+        infoDiv.textContent = 'Tamanho máximo por arquivo: 10MB';
+      }
     });
   </script>
-
 </body>
 </html>

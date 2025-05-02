@@ -76,3 +76,39 @@ body {
       white-space: nowrap;
     }
 
+    /* upload_em_massa */
+
+      .main-content {
+      margin-left: 250px;  /* Largura do menu */
+      padding: 20px 20px 20px 10px;  /* Reduzi o padding-left */
+      width: calc(100% - 250px);
+      transition: all 0.3s;  /* Suave transição */
+    }
+
+    /* Ajuste para telas menores */
+    @media (max-width: 992px) {
+      .main-content {
+        margin-left: 0;
+        padding: 15px;
+        width: 100%;
+      }
+    }
+
+    /* Ajuste fino no container */
+    .container-fluid {
+      padding-left: 5px;  /* Reduz o espaço interno */
+      max-width: 98%;     /* Utiliza mais espaço */
+    }
+
+    /* Card mais compacto */
+    .card {
+      margin-bottom: 0;
+      border-radius: 8px;
+    }
+
+    /* Formulário mais compacto */
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    
